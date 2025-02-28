@@ -9,7 +9,7 @@ class Mage(Character):
     def fireball(self,Character):
         if self.fireballCooldown== 0:
             self.fireballCooldown =2
-            DamageCounter.dmg(Character,self,self.strength,self.name)
+            DamageCounter.dmg(Character,self,self.strength*self.intelligence,self.name)
         else:
             print(f"You can't hit this turn: {self.fireballCooldown} left before you can use this")
             self.fireballCooldown-=1
