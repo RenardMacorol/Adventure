@@ -1,0 +1,71 @@
+import tkinter as tk
+from tkinter import messagebox
+from enemy import Enemy
+from character import Character
+from archer import Archer
+from swordsman import SwordsMan
+from mage import Mage
+from overlord import OverLord
+from damageCounter import DamageCounter
+
+class GameGUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Hybrid Character Creation Game")
+        self.player = Character()
+        
+        self.create_character_selection()
+    
+    def create_character_selection(self):
+        self.clear_frame()
+        tk.Label(self.root, text="Choose Your Character:").pack()
+        tk.Button(self.root, text="Swordsman", command=lambda: self.set_character(SwordsMan)).pack()
+        tk.Button(self.root, text="Archer", command=lambda: self.set_character(Archer)).pack()
+        tk.Button(self.root, text="Mage", command=lambda: self.set_character(Mage)).pack()
+        tk.Button(self.root, text="Overlord", command=lambda: self.set_character(OverLord)).pack()
+    
+    def set_character(self, character_class):
+        self.player = character_class()
+        messagebox.showinfo("Character Selected", f"You chose {self.player.__class__.__name__}!")
+        self.spawn_enemy()
+    
+    def spawn_enemy(self):
+        self.enemy = Enemy()
+        self.create_combat_interface()
+    
+    def create_combat_interface(self):
+        self.clear_frame()
+        self.info_label = tk.Label(self.root, text=f"An enemy appears! Health: {self.enemy.health}")
+        self.info_label.pack()
+        
+        self.ability_buttons = []
+        for i in range(1, 5):
+            btn = tk.Button(self.root, text=f"Ability {i}", command=lambda x=i: self.use_ability(x))
+            btn.pack()
+            self.ability_buttons.append(btn)
+        
+    def use_ability(self, ability_num):
+        if self.player.health <= 0:
+            messagebox.showinfo("Game Over", "You have been defeated!")
+            self.root.quit()
+            return
+        
+        ability_method = getattr(self.player, f"ability{ability_num}", None)
+        if callable(ability_method):
+            ability_method(self.enemy)
+            
+        if self.enemy.isDead:
+            messagebox.showinfo("Victory", "You defeated the enemy!")
+            self.root.quit()
+        else:
+            DamageCounter.dmg(self.player, self.enemy, self.enemy.strength, self.enemy.name)
+            self.info_label.config(text=f"Enemy Health: {self.enemy.health}\nYour Health: {self.player.health}")
+    
+    def clear_frame(self):
+        for widget in self.root.winfo_children():
+            widget.destroy()
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    game = GameGUI(root)
+    root.mainloop()
