@@ -3,7 +3,7 @@ from damageCounter import DamageCounter
 class Archer(Character):
     def __init__(self):
         super().__init__("Orion","Archer",300,150,20,30,20,False)
-        self.arrowCooldown = 3
+        self.arrowCooldown = 4
     def ability1(self, Character):
         self.superArrow(Character)
     def superArrow(self,Character):
